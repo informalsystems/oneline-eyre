@@ -29,7 +29,7 @@
 //!
 //! [`eyre::EyreHandler`]: https://docs.rs/eyre/*/eyre/trait.EyreHandler.html
 //! [`eyre`]: https://docs.rs/eyre
-#![doc(html_root_url = "https://docs.rs/oneline-eyre/0.3.0")]
+#![doc(html_root_url = "https://docs.rs/oneline-eyre/0.1.0")]
 #![warn(
     missing_debug_implementations,
     missing_docs,
