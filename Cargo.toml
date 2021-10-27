@@ -1,18 +1,17 @@
 [package]
-name = "simple-eyre"
-version = "0.3.0"
-authors = ["Jane Lusby <jlusby@yaah.dev>"]
-edition = "2018"
-license = "MIT OR Apache-2.0"
-readme = "README.md"
-repository = "https://github.com/yaahc/simple-eyre"
-homepage = "https://github.com/yaahc/simple-eyre"
-documentation = "https://docs.rs/simple-eyre"
-keywords = ["error"]
-description = """
-One of the simplest error reporters one can build ontop of eyre, defining only an error report
+name          = "oneline-eyre"
+version       = "0.3.0"
+authors       = ["Jane Lusby <jlusby@yaah.dev>"]
+edition       = "2018"
+license       = "MIT OR Apache-2.0"
+readme        = "README.md"
+repository    = "https://github.com/informalsystems/oneline-eyre"
+homepage      = "https://github.com/informalsystems/oneline-eyre"
+documentation = "https://docs.rs/oneline-eyre"
+keywords      = ["error"]
+description   = """
+A fork of `simple-eyre` which outputs errors on a single line
 """
 
 [dependencies]
-eyre = "0.6.0"
-indenter = "0.3.0"
+eyre = "0.6"

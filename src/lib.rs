@@ -8,7 +8,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! simple-eyre = "0.3"
+//! oneline-eyre = "0.3"
 //! ```
 //!
 //! Then install the hook handler before constructing any `eyre::Report` types.
@@ -16,10 +16,10 @@
 //! # Example
 //!
 //! ```rust,should_panic
-//! use simple_eyre::eyre::{eyre, WrapErr, Report};
+//! use oneline_eyre::eyre::{eyre, WrapErr, Report};
 //!
 //! fn main() -> Result<(), Report> {
-//!     simple_eyre::install()?;
+//!     oneline_eyre::install()?;
 //!
 //!     let e: Report = eyre!("oh no this program is just bad!");
 //!
@@ -29,11 +29,11 @@
 //!
 //! [`eyre::EyreHandler`]: https://docs.rs/eyre/*/eyre/trait.EyreHandler.html
 //! [`eyre`]: https://docs.rs/eyre
-#![doc(html_root_url = "https://docs.rs/simple-eyre/0.2.0")]
+#![doc(html_root_url = "https://docs.rs/oneline-eyre/0.3.0")]
 #![warn(
     missing_debug_implementations,
     missing_docs,
-    missing_doc_code_examples,
+    rustdoc::missing_doc_code_examples,
     rust_2018_idioms,
     unreachable_pub,
     bad_style,
@@ -53,17 +53,28 @@
     unused_parens,
     while_true
 )]
+
 pub use eyre;
+
 #[doc(hidden)]
 pub use eyre::{Report, Result};
 
 use eyre::EyreHandler;
-use indenter::indented;
+
 use std::error::Error;
 
 /// A custom context type for minimal error reporting via `eyre`
 #[derive(Debug)]
-pub struct Handler;
+pub struct Handler {
+    separator: &'static str,
+}
+
+impl Handler {
+    /// Construct a new context which uses the given separator
+    fn new(separator: &'static str) -> Self {
+        Self { separator }
+    }
+}
 
 impl EyreHandler for Handler {
     fn debug(
@@ -71,8 +82,6 @@ impl EyreHandler for Handler {
         error: &(dyn Error + 'static),
         f: &mut core::fmt::Formatter<'_>,
     ) -> core::fmt::Result {
-        use core::fmt::Write as _;
-
         if f.alternate() {
             return core::fmt::Debug::fmt(error, f);
         }
@@ -80,19 +89,9 @@ impl EyreHandler for Handler {
         write!(f, "{}", error)?;
 
         if let Some(cause) = error.source() {
-            write!(f, "\n\nCaused by:")?;
-
-            let multiple = cause.source().is_some();
             let errors = std::iter::successors(Some(cause), |e| (*e).source());
-
-            for (n, error) in errors.enumerate() {
-                writeln!(f)?;
-
-                if multiple {
-                    write!(indented(f).ind(n), "{}", error)?;
-                } else {
-                    write!(indented(f), "{}", error)?;
-                }
+            for error in errors {
+                write!(f, "{}{}", self.separator, error)?;
             }
         }
 
@@ -100,12 +99,16 @@ impl EyreHandler for Handler {
     }
 }
 
-/// Install the `simple-eyre` hook as the global error report hook.
+/// The default separator used to delimitate errors.
+const DEFAULT_SEPARATOR: &str = ": ";
+
+/// Install the `oneline-eyre` hook as the global error report hook,
+/// using `: ` `s a separator.
 ///
 /// # Details
 ///
 /// This function must be called to enable the customization of `eyre::Report`
-/// provided by `simple-eyre`. This function should be called early, ideally
+/// provided by `oneline-eyre`. This function should be called early, ideally
 /// before any errors could be encountered.
 ///
 /// Only the first install will succeed. Calling this function after another
@@ -113,7 +116,24 @@ impl EyreHandler for Handler {
 /// function _must_ be called before any `eyre::Report`s are constructed to
 /// prevent the default handler from being installed.
 pub fn install() -> Result<()> {
-    crate::eyre::set_hook(Box::new(move |_| Box::new(Handler)))?;
+    install_custom(DEFAULT_SEPARATOR)
+}
+
+/// Install the `oneline-eyre` hook as the global error report hook,
+/// using the provided separator.
+///
+/// # Details
+///
+/// This function must be called to enable the customization of `eyre::Report`
+/// provided by `oneline-eyre`. This function should be called early, ideally
+/// before any errors could be encountered.
+///
+/// Only the first install will succeed. Calling this function after another
+/// report handler has been installed will cause an error. **Note**: This
+/// function _must_ be called before any `eyre::Report`s are constructed to
+/// prevent the default handler from being installed.
+pub fn install_custom(separator: &'static str) -> Result<()> {
+    crate::eyre::set_hook(Box::new(move |_| Box::new(Handler::new(separator))))?;
 
     Ok(())
 }

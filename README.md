@@ -1,7 +1,9 @@
-## simple-eyre
+## oneline-eyre
 
-[![Latest Version](https://img.shields.io/crates/v/simple-eyre.svg)](https://crates.io/crates/simple-eyre)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/simple-eyre)
+[![Latest Version](https://img.shields.io/crates/v/oneline-eyre.svg)](https://crates.io/crates/oneline-eyre)
+[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/oneline-eyre)
+
+> This is a fork of [`simple-eyre`](https://crates.io/crates/simple-eyre) which outputs errors traces on a single line.
 
 This library provides a custom [`eyre::EyreHandler`] type for usage with [`eyre`] that provides
 a minimal error report with no additional context. Essentially the minimal implementation of an
@@ -13,7 +15,7 @@ Add the following to your toml file:
 
 ```toml
 [dependencies]
-simple-eyre = "0.3"
+oneline-eyre = "0.3"
 ```
 
 Then install the hook handler before constructing any `eyre::Report` types.
@@ -21,10 +23,10 @@ Then install the hook handler before constructing any `eyre::Report` types.
 # Example
 
 ```rust,should_panic
-use simple_eyre::eyre::{eyre, WrapErr, Report};
+use oneline_eyre::eyre::{eyre, WrapErr, Report};
 
 fn main() -> Result<(), Report> {
-    simple_eyre::install()?;
+    oneline_eyre::install()?;
 
     let e: Report = eyre!("oh no this program is just bad!");
 
