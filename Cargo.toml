@@ -3,6 +3,7 @@ name          = "oneline-eyre"
 version       = "0.1.0"
 authors       = ["Jane Lusby <jlusby@yaah.dev>", "Informal Systems <hello@informal.systems>"]
 edition       = "2018"
+rust-version  = "1.56"
 license       = "MIT OR Apache-2.0"
 readme        = "README.md"
 repository    = "https://github.com/informalsystems/oneline-eyre"
